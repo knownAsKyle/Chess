@@ -1,0 +1,32 @@
+.fl{ 
+    float:left;
+}
+.board{  
+    max-width:512px;
+    margin: 0 auto;
+}
+.square{
+	max-height: 64px;
+    max-width: 64px;
+    width:12.5%;
+    padding-bottom:12.5%;	
+}
+.whiteSquare{
+    background-color:#009688;
+}
+.blackSquare{
+    background-color:#424242;
+}
+.piece{
+	position: absolute;
+   text-align: center;
+    transition: all .2s;
+}
+.black{
+	color: #CFD8DC;
+	text-shadow: 1px 1px black;
+}
+.white{
+	color: #212121;
+	text-shadow: 1px 1px white;
+}
