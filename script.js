@@ -17,10 +17,7 @@
 			col--;
 		}
 
-
-
-		var pieceContent = document.createTextNode(String.fromCharCode(row) + col);
-		
+		var letter = String.fromCharCode(row);	
 		
 		if (even) {
 			addedClass = addedClass + " whiteSquare";
@@ -28,6 +25,7 @@
 			addedClass = addedClass + " blackSquare";
 		}
 		piece.setAttribute('class', 'piece');
+		piece.addEventListener("click", handleTileClicked);
 		if(col === 1 || col === 8){
 			if(row === 65 || row === 72){
 				pieceClasses = pieceClasses + "tower";
@@ -44,36 +42,47 @@
 			if(row === 69){
 				pieceClasses = pieceClasses + "queen";
 			}
-			pieceClasses = (col === 8)?(pieceClasses + " black"):(pieceClasses + " white");
-			
+			pieceClasses = (col === 8)?(pieceClasses + " white"):(pieceClasses + " black");
+			icon.setAttribute('class', pieceClasses);
+			piece.appendChild(icon)
 			
 		}
 		if(col === 2 || col === 7){
 			pieceClasses = pieceClasses + "pawn";
-			pieceClasses = (col === 7)?(pieceClasses + " black"):(pieceClasses + " white");
+			pieceClasses = (col === 7)?(pieceClasses + " white"):(pieceClasses + " black");
+			icon.setAttribute('class', pieceClasses);
+			piece.appendChild(icon)
 		}
-		icon.setAttribute('class', pieceClasses);
-		piece.appendChild(icon)
-		tile.id = i;
+		
+		tile.id = letter + col;
+		tile.title = letter + col;
 		tile.setAttribute('class', addedClass);
 		tile.appendChild(piece)
-		tile.addEventListener("click", handleTileClicked);
 		board.appendChild(tile)
 
 		row++;
 	}
 
 	var q = document.getElementsByClassName("piece");
+	var defaultSize = "30px";
 	function handleTileClicked(e) {
 		for (var i = 0; i < q.length; i++) {
-			if (q[i].style.fontSize !== 'inherit') {
-				q[i].style.fontSize = 'inherit';
+			if (q[i].style.fontSize !== defaultSize) {
+				q[i].style.fontSize = defaultSize;
+				if(q[i].childNodes[0]){
+					q[i].childNodes[0].style.color = i > 16?"black":"white";
+				}
 			}
 		}
-		var content = e.target.children[0];
+		e.target.style.color = "blue"
+		var content = e.target.parentElement
+		
+		//content = content || e.target;
 		if (content) {
-			content.style.fontSize = '30px';
+			console.dir(content)
+			content.style.fontSize = '45px';
 		}
+		
 
 	}
 })()

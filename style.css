@@ -19,14 +19,24 @@
 }
 .piece{
 	position: absolute;
-   text-align: center;
+	max-height: 64px;
+    max-width: 64px;
+    width:12.5%;
+    padding-top: 10px;
+   	text-align: center;
     transition: all .2s;
 }
 .black{
-	color: #CFD8DC;
-	text-shadow: 1px 1px black;
+	color: #212121;
+	text-shadow: 1px 1px #FFFFFF;
 }
 .white{
-	color: #212121;
-	text-shadow: 1px 1px white;
+	color: #FFFFFF;
+	text-shadow: 1px 1px black;
+}
+
+@media (max-width: 520px) {
+  .piece {
+  	padding: 0;
+  }
 }
