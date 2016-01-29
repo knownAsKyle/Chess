@@ -1,3 +1,14 @@
+#announcement{
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  margin-left: -100px;
+  width: 200px;
+  background: white;
+  text-align: center;
+  z-index: 2;
+}
+
 .fl{ 
     float:left;
 }
