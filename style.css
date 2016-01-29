@@ -54,11 +54,23 @@
 	text-shadow: 1px 1px black;
 }
 
+#reset{
+	position: fixed;
+	color: red;
+	top:0;
+	right: 0;
+	font-size: 20px;
+}
+
 @media (max-width: 520px) {
   .piece {
   	padding: 0;
   }
   .playerWrapper{
   	text-align: left;
+  }
+  #reset{
+  	top: inherit;
+  	bottom: 0;
   }
 }

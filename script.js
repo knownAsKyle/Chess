@@ -1,5 +1,18 @@
 (function() {
+	var firstLoad = true;
 	var ref = new Firebase("https://quicktest1.firebaseio.com/chess");
+	ref.on("value",function(snap){
+		handleDBAction(snap.val());
+	})
+
+	function handleDBAction(val){
+		val = val || {};
+		var p1 = val["Player 1"];
+		var p2 = val["Player 2"];
+		console.log(p1)
+		pOne.ele.firstElementChild.innerText = (p1 && p1.userInfo)?p1.userInfo.name:"Player 1";
+		pTwo.ele.firstElementChild.innerText = (p2 && p2.userInfo)?p2.userInfo.name:"Player 2";
+	}
 
 	var pOne = {}
 	var pTwo = {}
@@ -16,18 +29,29 @@
 				if (!pOne.userInfo || pOne.userInfo.name || pOne.userInfo.name === "") {
 					pOne.userInfo = makePlayer(player);
 					e.target.innerText = pOne.userInfo.name
+					ref.child(player).set(pOne);
+					firstLoad = false;
 				}
 				break
 			case "Player 2":
 				if (!pTwo.userInfo || pTwo.userInfo.name || pTwo.userInfo.name === "") {
 					pTwo.userInfo = makePlayer(player);
 					e.target.innerText = pTwo.userInfo.name;
+					ref.child(player).set(pTwo);
+					firstLoad = false;
 				}
 				break
 			default:
 				console.log("...who is that...")
 		}
-		console.log(pOne, pTwo)
+	}
+
+	var reset = document.getElementById("reset");
+	reset.addEventListener("click", clearDB);
+	function clearDB(){
+		if(confirm("Reset User Name?")){
+			ref.remove()
+		}
 	}
 
 	function makePlayer(player) {
