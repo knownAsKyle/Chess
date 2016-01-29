@@ -1,4 +1,43 @@
 (function() {
+	var ref = new Firebase("https://quicktest1.firebaseio.com/chess");
+
+	var pOne = {}
+	var pTwo = {}
+	pOne.ele = document.getElementById("playerOne");
+	pTwo.ele = document.getElementById("playerTwo");
+
+	pOne.ele.addEventListener("click", enterPlayer);
+	pTwo.ele.addEventListener("click", enterPlayer);
+
+	function enterPlayer(e) {
+		var player = e.target.innerText
+		switch (player) {
+			case "Player 1":
+				if (!pOne.userInfo || pOne.userInfo.name || pOne.userInfo.name === "") {
+					pOne.userInfo = makePlayer(player);
+					e.target.innerText = pOne.userInfo.name
+				}
+				break
+			case "Player 2":
+				if (!pTwo.userInfo || pTwo.userInfo.name || pTwo.userInfo.name === "") {
+					pTwo.userInfo = makePlayer(player);
+					e.target.innerText = pTwo.userInfo.name;
+				}
+				break
+			default:
+				console.log("...who is that...")
+		}
+		console.log(pOne, pTwo)
+	}
+
+	function makePlayer(player) {
+		var obj = {};
+		var name = prompt("Enter Name For " + player) || player;
+		obj.name = name;
+		return obj;
+	}
+
+
 
 	var board = document.getElementById("board");
 	var row = 65;
@@ -84,7 +123,11 @@
 				if (selectedPiece) {
 					$(selectedPiece).css(pieceCss);
 					$(e.target).children('.piece').append(selectedPiece)
-					$(selectedPiece).animate({"font-size": "2.1em"}).animate({"font-size": "1.3em"})
+					$(selectedPiece).css({
+						"font-size": "2.1em"
+					}).animate({
+						"font-size": "1.2em"
+					})
 					selectedPiece = null;
 				}
 				break;
@@ -92,61 +135,10 @@
 				if (!selectedPiece) {
 					selectedPiece = jQuery(e.target).detach();
 				}
-
-				var content = e.target.parentElement
-					// if (content) {
-					// 	content.style.fontSize = '45px';
-					// }
-
-
 				break;
 			default:
-				console.log("nuffin")
+
 		}
 	}
-
-	// function applyToAllPieces() {
-	// 	for (var i = 0; i < q.length; i++) {
-	// 		if (q[i].style.fontSize !== defaultSize) {
-	// 			q[i].style.fontSize = defaultSize;
-	// 			if (q[i].childNodes[0]) {
-	// 				q[i].childNodes[0].style.color = i > 16 ? "black" : "white";
-	// 				q[i].childNodes[0].style
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	// for (var i = 0; i < q.length; i++) {
-	// 				if (q[i].style.fontSize !== defaultSize) {
-	// 					q[i].style.fontSize = defaultSize;
-	// 					if (q[i].childNodes[0]) {
-	// 						q[i].childNodes[0].style.color = i > 16 ? "black" : "white";
-	// 					}
-	// 				}
-	// 			}
-
-	// function handlePieceClicked(e) {
-	// 	console.log("piece ", e)
-	// 	for (var i = 0; i < q.length; i++) {
-	// 		if (q[i].style.fontSize !== defaultSize) {
-	// 			q[i].style.fontSize = defaultSize;
-	// 			if (q[i].childNodes[0]) {
-	// 				q[i].childNodes[0].style.color = i > 16 ? "black" : "white";
-	// 			}
-	// 		}
-	// 	}
-	// 	e.target.style.color = "blue";
-	// 	var content = e.target.parentElement
-
-	// 	//content = content || e.target;
-	// 	if (content) {
-	// 		console.dir(content)
-	// 		content.style.fontSize = '45px';
-	// 	}
-
-	// 	//selectedPiece = jQuery(e.target).detach();
-	// }
-
 
 })()
