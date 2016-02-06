@@ -19,73 +19,85 @@
 }
 
 .playerWrapper{
-	float: left;
-	padding: 4px;
-	max-height:200px;
-	width: 100%;
-	text-align: center;
-	color: white;
+  float: left;
+  padding: 4px;
+  max-height:200px;
+  width: 100%;
+  text-align: center;
+  color: white;
 }
 #playerOne{
-	text-shadow: 1px 1px 3px #009688,-1px -1px 2px black;
-	
-	
+  text-shadow: 1px 1px 3px #009688,-1px -1px 2px black;
 }
 #playerTwo{
-	text-shadow: 1px 1px 3px black,-1px -1px 1px black;
+  text-shadow: 1px 1px 3px black,-1px -1px 1px black;
 }
 .square{
-	max-height: 64px;
-    max-width: 64px;
-    width:12.5%;
-    padding-bottom:12.5%;	
+  position: relative;
+  max-height: 64px;
+  max-width: 64px;
+  width:12.5%;
+  padding-bottom:12.5%; 
+  font-size: 2em;
+  
 }
+
+.square *{
+  position: absolute;
+  padding: .6em;
+}
+
 .whiteSquare{
     background-color:#009688;
 }
 .blackSquare{
     background-color:#424242;
 }
-.piece{
-	position: absolute;
-	max-height: 64px;
+/*.piece{
+  position: absolute;
+  max-height: 64px;
     max-width: 64px;
     width:12.5%;
     padding-top: 10px;
-   	text-align: center;
-   	font-size: 2em;
+    text-align: center;
+    font-size: 2em;
     transition: all .2s;
-}
+}*/
 .black{
-	color: #212121;
-	text-shadow: 1px 1px #FFFFFF;
+  color: #212121;
+  text-shadow: 1px 1px #FFFFFF;
 }
 .white{
-	color: #FFFFFF;
-	text-shadow: 1px 1px black;
+  color: #FFFFFF;
+  text-shadow: 1px 1px black;
 }
 
 #reset{
-	position: fixed;
-	color: red;
-	top:0;
-	right: 0;
-	font-size: 20px;
+  position: fixed;
+  color: red;
+  top:0;
+  right: 0;
+  font-size: 20px;
 }
 
 .player-name{
-	font-size: 30px;
+  font-size: 30px;
 }
 
 @media (max-width: 520px) {
-  .piece {
-  	padding: 0;
+  .white,.black {
+    padding: .3em;
   }
   .playerWrapper{
-  	text-align: left;
+    text-align: left;
   }
   #reset{
-  	top: inherit;
-  	bottom: 0;
+    top: inherit;
+    bottom: 0;
+  }
+}
+@media (max-width: 400px) {
+  .white,.black {
+    padding: .1em;
   }
 }

@@ -13,7 +13,6 @@
 
 	function handleDBAction(val) {
 		val = val || {};
-
 		buildBoard(val.boardState)
 		var p1 = val["Player 1"];
 		var p2 = val["Player 2"];
@@ -33,31 +32,18 @@
 	$('.board').on("click", ".square", handleSquareClick);
 
 	function handleSquareClick(e) {
-		return findPiece(e.target)
-	}
-
-	function findPiece(ele) {
-		if (ele.children.length > 0) {
-			findPiece(ele.children[0])
-		} else {
-			if (ele.tagName === "SPAN" && !selectedPiece) {
-				ref.child("boardState").child(jQuery(ele).parent().parent(".square")[0].id).remove()
-				return (selectedPiece = jQuery(ele).detach());
+		// console.log($(this).attr("id"))
+		// console.log($(this).children("span").length)
+		if($(this).children("span").length > 0){
+			if(!selectedPiece){
+				selectedPiece = $(this).children("span").detach();
+				ref.child("boardState").child($(this).attr("id")).remove()
 			}
-			if (selectedPiece && ele.tagName !== "SPAN") {
-				if (ele.className === "piece") {
-					jQuery(ele).append(selectedPiece);
-					updateRemoteBoardState(selectedPiece[0], jQuery(ele).parent(".square")[0].id)
-					return (selectedPiece = null);
-				}
-				if (ele.className !== "piece") {
-					jQuery('<div/>', {
-						class: 'piece',
-					}).appendTo(ele);
-					$(ele).children(".piece").append(selectedPiece);
-					updateRemoteBoardState(selectedPiece[0], $(ele)[0].id)
-					return (selectedPiece = null);
-				}
+		}else{
+			if(selectedPiece){
+				$(this).append(selectedPiece)
+				updateRemoteBoardState(selectedPiece[0], $(this).attr("id"))
+				selectedPiece = null;
 			}
 		}
 	}
@@ -126,9 +112,12 @@
 	}
 
 	function setBoardState(boardState) {
+		var fontSize = "2em";
+		var h = $("#A1").height()
 		$(".sqaure").empty();
+
 		for (key in boardState) {
-			var ele = $("#" + key).append("<div class='piece'><span class='glyphicon glyphicon-" + boardState[key].name + " " + boardState[key].color + "'></span></div>")
+			var ele = $("#" + key).append("<span style='' class='glyphicon glyphicon-" + boardState[key].name + " " + boardState[key].color + "'></span>")
 		}
 	}
 
