@@ -4,21 +4,22 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Chess</title>
-		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-		<link rel="stylesheet" href="style.css">
+		<link href="styles/bootstrap.min.css" rel="stylesheet" />
+		<link href="styles/style.css" rel="stylesheet" />
 	</head>
 	<body>
-		<h5 id="announcement"><h5>
-		<h2 id="reset">X</h2>
+		<div id="announcement"></div>
+		<div id="reset">X</div>
 		<div id="board" class="board"></div>
 		<div id="playerOne" class="playerWrapper">
-			<h2>Player 1</h2> 
+			<div class="player-name">Player 1</div> 
 		</div>
 		<div id="playerTwo" class="playerWrapper">
-			<h2>Player 2</h2>
+			<div class="player-name">Player 2</div>
 		</div>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
 		<script src="https://cdn.firebase.com/js/client/2.4.0/firebase.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-		<script src="script2.js"></script>
+		<script src="script3.js"></script>
 	</body>
 </html>
