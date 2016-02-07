@@ -3,21 +3,40 @@
 
 	var firstLoad = true;
 	var makeNewBoard = false;
+	var localBoardState = {};
 	var pOne = {};
 	var pTwo = {};
 	pOne.ele = document.getElementById("playerOne");
 	pTwo.ele = document.getElementById("playerTwo");
-	ref.on("value", function(snap) {
-		handleDBAction(snap.val());
-	});
+
+	function init() {
+		ref.once("value", function(snap) {
+			handleDBAction(snap.val());
+		});
+	}
+	init();
 
 	function handleDBAction(val) {
+
 		val = val || {};
 		buildBoard(val.boardState)
+		firstLoad = false;
 		var p1 = val["Player 1"];
 		var p2 = val["Player 2"];
+
 		pOne.ele.firstElementChild.innerText = (p1 && p1.userInfo) ? p1.userInfo.name : "Player 1";
 		pTwo.ele.firstElementChild.innerText = (p2 && p2.userInfo) ? p2.userInfo.name : "Player 2";
+	}
+
+	ref.on("value", function(snap) {
+		if (!firstLoad) {
+			updateBoard(snap.val());
+		}
+	});
+
+	function updateBoard(val) {
+		console.log("about to update")
+		setBoardState(val.boardState)
 	}
 
 	pOne.currentPieces = [];
@@ -29,21 +48,25 @@
 
 	var board = document.getElementById("board");
 	var selectedPiece = null;
+	var selectedPieceId = null;
 	$('.board').on("click", ".square", handleSquareClick);
 
 	function handleSquareClick(e) {
 		// console.log($(this).attr("id"))
 		// console.log($(this).children("span").length)
-		if($(this).children("span").length > 0){
-			if(!selectedPiece){
+		if ($(this).children("span").length > 0) {
+			if (!selectedPiece) {
 				selectedPiece = $(this).children("span").detach();
-				ref.child("boardState").child($(this).attr("id")).remove()
+				selectedPieceId = $(this).attr("id");
+
 			}
-		}else{
-			if(selectedPiece){
+		} else {
+			if (selectedPiece) {
 				$(this).append(selectedPiece)
+				ref.child("boardState").child(selectedPieceId).remove()
 				updateRemoteBoardState(selectedPiece[0], $(this).attr("id"))
 				selectedPiece = null;
+				selectedPieceId = null;
 			}
 		}
 	}
@@ -75,6 +98,7 @@
 		}
 		makeNewBoard = false;
 		setBoardState(boardState)
+		localBoardState = boardState;
 		ref.child("boardState").set(boardState)
 	}
 
@@ -112,19 +136,19 @@
 	}
 
 	function setBoardState(boardState) {
-		var fontSize = "2em";
-		var h = $("#A1").height()
-		$(".sqaure").empty();
+		console.log(boardState)
+		$(".glyphicon").remove();
+		console.log("should be empty")
+		if (true) {
 
-		for (key in boardState) {
-			var ele = $("#" + key).append("<span style='' class='glyphicon glyphicon-" + boardState[key].name + " " + boardState[key].color + "'></span>")
-		}
-	}
 
-	function addBoardState(name) {
-		return {
-			name: name
+
+			for (key in boardState) {
+				var ele = $("#" + key).html("<span style='' class='glyphicon glyphicon-" + boardState[key].name + " " + boardState[key].color + "'></span>")
+			}
+			console.log("populating")
 		}
+
 	}
 
 	function enterPlayer(e) {
@@ -135,7 +159,6 @@
 					pOne.userInfo = makePlayer(player);
 					e.target.innerText = pOne.userInfo.name;
 					ref.child(player).set(pOne);
-					firstLoad = false;
 				}
 				break;
 			case "Player 2":
@@ -143,7 +166,6 @@
 					pTwo.userInfo = makePlayer(player);
 					e.target.innerText = pTwo.userInfo.name;
 					ref.child(player).set(pTwo);
-					firstLoad = false;
 				}
 				break;
 			default:
@@ -160,6 +182,7 @@
 		if (confirm("Reset Board?")) {
 			makeNewBoard = true;
 			ref.child("boardState").remove();
+			init()
 		}
 	}
 
