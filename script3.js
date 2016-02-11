@@ -17,7 +17,6 @@
 	init();
 
 	function handleDBAction(val) {
-
 		val = val || {};
 		buildBoard(val.boardState)
 		firstLoad = false;
@@ -35,8 +34,11 @@
 	});
 
 	function updateBoard(val) {
-		console.log("about to update")
-		setBoardState(val.boardState)
+		if (val) {
+			console.log("about to update")
+			setBoardState(val.boardState)
+		}
+
 	}
 
 	pOne.currentPieces = [];
@@ -49,6 +51,7 @@
 	var board = document.getElementById("board");
 	var selectedPiece = null;
 	var selectedPieceId = null;
+	var captured = [];
 	$('.board').on("click", ".square", handleSquareClick);
 
 	function handleSquareClick(e) {
@@ -58,7 +61,13 @@
 			if (!selectedPiece) {
 				selectedPiece = $(this).children("span").detach();
 				selectedPieceId = $(this).attr("id");
-
+			} else {
+				captured.push($(this).children("span").detach())
+				$(this).append(selectedPiece)
+				ref.child("boardState").child(selectedPieceId).remove()
+				updateRemoteBoardState(selectedPiece[0], $(this).attr("id"))
+				selectedPiece = null;
+				selectedPieceId = null;
 			}
 		} else {
 			if (selectedPiece) {
@@ -136,17 +145,11 @@
 	}
 
 	function setBoardState(boardState) {
-		console.log(boardState)
 		$(".glyphicon").remove();
-		console.log("should be empty")
 		if (true) {
-
-
-
 			for (key in boardState) {
 				var ele = $("#" + key).html("<span style='' class='glyphicon glyphicon-" + boardState[key].name + " " + boardState[key].color + "'></span>")
 			}
-			console.log("populating")
 		}
 
 	}
