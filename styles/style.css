@@ -77,23 +77,27 @@
   color: red;
   top:0;
   right: 0;
-  font-size: 20px;
+  padding: 5px;
+  font-size: 30px;
+  cursor: pointer;
+  z-index: 2;
 }
 
 .player-name{
   font-size: 30px;
 }
-
+@media (max-width: 600px) {
+   /* #reset{
+    top: inherit;
+    bottom: 0;
+  }*/
+}
 @media (max-width: 520px) {
   .white,.black {
     padding: .3em;
   }
   .playerWrapper{
     text-align: left;
-  }
-  #reset{
-    top: inherit;
-    bottom: 0;
   }
 }
 @media (max-width: 400px) {

@@ -5,6 +5,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Chess</title>
 		<link href="styles/bootstrap.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="styles/ferriswheelbutton.min.css">
+		<link rel="stylesheet" type="text/css" href="styles/sweetalert.css">
 		<link href="styles/style.css" rel="stylesheet" />
 	</head>
 	<body>
@@ -17,9 +20,94 @@
 		<div id="playerTwo" class="playerWrapper">
 			<div class="player-name">Player 2</div>
 		</div>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
 		<script src="https://cdn.firebase.com/js/client/2.4.0/firebase.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-		<script src="script3.js"></script>
+		<script src="js/jquery.ferriswheelbutton.min.js"></script>
+		<script src="sweetalert.min.js"></script>
+		<script src="js/main.js"></script>
+		<script type="text/javascript">
+	jQuery(document).ready(function($) {
+
+		options = {
+			'primaryIcon':'external-link',
+		};
+
+		icons = ['google','info','rocket'];
+		$.ferrisWheelButton(options,icons);
+
+
+		//Directly make them links
+		//$.ferrisWheelButton('addLink','google','https://www.google.com/');
+		//$.ferrisWheelButton('addLink','codepen','http://codepen.io/');
+		var allButtons = $.ferrisWheelButton('getButtons')
+		var googleButton = $.ferrisWheelButton('getButton','google')
+		var infoButton = $.ferrisWheelButton('getButton','info')
+		var playButton = $.ferrisWheelButton('getButton','rocket')
+
+
+		//Use jquery on all buttons
+		allButtons.css({
+			'border':'2px solid white'
+		});
+		infoButton.css({
+			'background-color':'#3b5998',
+		});
+		googleButton.css({
+			'background-color':'#F44336'
+		});
+
+
+		//Use normal jquery methods on any button indivdiually
+		allButtons.on('click',handleMenuButtonClick);
+
+		function handleMenuButtonClick(ev){
+			ev.stopImmediatePropagation();
+			var optionSelected = $(ev.target);
+			var optionSelectedName = optionSelected.attr("title")?$(ev.target).attr("title"):optionSelected.children(".fa").attr("title");
+			routeMenuButtonClick(optionSelectedName)
+
+		}
+
+		function routeMenuButtonClick(option){
+			switch(option){
+				case "google":
+					swal("Google Login", "Will log into google", "success");
+				break;
+				case "info":
+					swal("info", "Will provide some info", "info");
+					swal({  
+						title: "Clear board?",   
+						text: "This will reset the board",   
+						type: "warning",   
+						showCancelButton: true,  
+						confirmButtonText: "Cool",
+						cancelButtonText: "No, cancel!",   
+						closeOnConfirm: false,   
+						closeOnCancel: false 
+					}, function(isConfirm){   
+						if (isConfirm) { 
+							console.log(Chester)
+							Chester.db.ref.child("boardState").set("reset");
+							swal("Deleted!", "game reset!", "success");   
+						} else {     
+							swal("Cancelled", "Your imaginary file is safe :)","error");   
+						} });
+				break;
+				case "rocket": 
+					console.log("launching game menu")
+					swal({   title: "Game Menu!",   text: "Hoping to put a list of active games here and a join/make new",   type: "warning",   confirmButtonText: "Cool" });
+				break;
+				default:
+			}
+		}
+
+		// //And use method chaining
+		// $.ferrisWheelButton('getButton','pinterest').css({
+		// 	'background-color':'#cc2127',
+		// 	'border':'none'
+		// }).attr('title','Click here to Pin this');
+
+	});
+</script>
 	</body>
 </html>
