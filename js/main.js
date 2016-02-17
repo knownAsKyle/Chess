@@ -3,26 +3,26 @@ var Chester = Chester || {};
 	LOCAL STATE TRACKER
 */
 (function(c) {
-	c.state = {};
-	c.state.firstLoad = true;
-	c.state.makeNewBoard = false;
-	c.state.selectedPiece = null;
-	c.state.selectedPieceId = null;
+	Chester.state = {};
+	Chester.state.firstLoad = true;
+	Chester.state.makeNewBoard = false;
+	Chester.state.selectedPiece = null;
+	Chester.state.selectedPieceId = null;
 	return c;
 })(Chester);
 /*
 	CONSTANTS
 */
 (function(c) {
-	c.consts = {};
-	c.consts.fbRef = "https://quicktest1.firebaseio.com/chess";
-	c.consts.pieces = {};
-	c.consts.pieces.tower = "tower";
-	c.consts.pieces.knight = "knight";
-	c.consts.pieces.bishop = "bishop";
-	c.consts.pieces.queen = "queen";
-	c.consts.pieces.king = "king";
-	c.consts.pieces.pawn = "pawn";
+	Chester.consts = {};
+	Chester.consts.fbRef = "https://quicktest1.firebaseio.com/chess";
+	Chester.consts.pieces = {};
+	Chester.consts.pieces.tower = "tower";
+	Chester.consts.pieces.knight = "knight";
+	Chester.consts.pieces.bishop = "bishop";
+	Chester.consts.pieces.queen = "queen";
+	Chester.consts.pieces.king = "king";
+	Chester.consts.pieces.pawn = "pawn";
 	return c;
 })(Chester);
 /*
@@ -30,8 +30,8 @@ var Chester = Chester || {};
 */
 
 (function(c) {
-	c.db = {};
-	c.db.ref = new Firebase(c.consts.fbRef);
+	Chester.db = {};
+	Chester.db.ref = new Firebase(Chester.consts.fbRef);
 
 	return c;
 })(Chester);
@@ -39,8 +39,8 @@ var Chester = Chester || {};
 	ELEMENTS
 */
 (function(c) {
-	c.ele = {};
-	c.ele.board = document.getElementById("board");
+	Chester.ele = {};
+	Chester.ele.board = document.getElementById("board");
 
 	return c;
 })(Chester);
@@ -50,29 +50,29 @@ var Chester = Chester || {};
 */
 
 (function(c) {
-	c.move = {};
-	c.move.handleSquareClick = handleSquareClick
+	Chester.move = {};
+	Chester.move.handleSquareClick = handleSquareClick
 
 	function handleSquareClick(e) {
 		if ($(this).children("span").length > 0) {
-			if (!c.state.selectedPiece) {
-				c.state.selectedPiece = $(this).children("span").detach();
-				c.state.selectedPieceId = $(this).attr("id");
+			if (!Chester.state.selectedPiece) {
+				Chester.state.selectedPiece = $(this).children("span").detach();
+				Chester.state.selectedPieceId = $(this).attr("id");
 			} else {
 				//captured.push($(this).children("span").detach())
-				$(this).append(c.state.selectedPiece)
-				c.db.ref.child("boardState").child(c.state.selectedPieceId).remove()
-				updateRemoteBoardState(c.state.selectedPiece[0], $(this).attr("id"))
-				c.state.selectedPiece = null;
-				c.state.selectedPieceId = null;
+				$(this).append(Chester.state.selectedPiece)
+				Chester.db.ref.child("boardState").child(Chester.state.selectedPieceId).remove()
+				updateRemoteBoardState(Chester.state.selectedPiece[0], $(this).attr("id"))
+				Chester.state.selectedPiece = null;
+				Chester.state.selectedPieceId = null;
 			}
 		} else {
-			if (c.state.selectedPiece) {
-				$(this).append(c.state.selectedPiece)
-				c.db.ref.child("boardState").child(c.state.selectedPieceId).remove();
-				updateRemoteBoardState(c.state.selectedPiece[0], $(this).attr("id"))
-				c.state.selectedPiece = null;
-				c.state.selectedPieceId = null;
+			if (Chester.state.selectedPiece) {
+				$(this).append(Chester.state.selectedPiece)
+				Chester.db.ref.child("boardState").child(Chester.state.selectedPieceId).remove();
+				updateRemoteBoardState(Chester.state.selectedPiece[0], $(this).attr("id"))
+				Chester.state.selectedPiece = null;
+				Chester.state.selectedPieceId = null;
 			}
 		}
 	}
@@ -81,7 +81,7 @@ var Chester = Chester || {};
 
 		var name = getPieceName(selectedPiece);
 		var color = selectedPiece.classList[2];
-		c.db.ref.child("boardState").child(id).set({
+		Chester.db.ref.child("boardState").child(id).set({
 			name: name,
 			color: color
 		})
@@ -100,37 +100,35 @@ var Chester = Chester || {};
 	EVENTS
 */
 (function(c) {
-	c.events = {};
-	// c.db.ref.once("value", function(snap) {
+	Chester.events = {};
+	// Chester.db.ref.once("value", function(snap) {
 	// 	handleDBAction(snap.val());
 	// });
 
 	function handleDBAction(val) {
 		val = val || {};
-		c.board.makeNew(val.boardState)
-			//c.state.firstLoad = false;
+		Chester.board.makeNew(val.boardState)
+			//Chester.state.firstLoad = false;
 
 		/*pOne.ele.firstElementChild.innerText = (p1 && p1.userInfo) ? p1.userInfo.name : "Player 1";
 		pTwo.ele.firstElementChild.innerText = (p2 && p2.userInfo) ? p2.userInfo.name : "Player 2";
 		*/
 	}
 
-	c.db.ref.child("boardState").on("value", function(snap) {
+	Chester.db.ref.child("boardState").on("value", function(snap) {
 
-		c.board.update(snap.val());
+		Chester.board.update(snap.val());
 	});
 
-	$('.board').on("click", ".square", c.move.handleSquareClick);
-	var reset = document.getElementById("reset");
-	reset.addEventListener("click", clearDB);
+	$('.board').on("click", ".square", Chester.move.handleSquareClick);
 
 	function clearDB() {
 		if (confirm("Reset User Name?")) {
-			c.db.ref.child("Player 2").child("userInfo").remove();
+			Chester.db.ref.child("Player 2").child("userInfo").remove();
 		}
 		if (confirm("Reset Board?")) {
-			c.state.makeNewBoard = true;
-			c.db.ref.child("boardState").remove();
+			Chester.state.makeNewBoard = true;
+			Chester.db.ref.child("boardState").remove();
 			init()
 		}
 	}
@@ -141,28 +139,28 @@ var Chester = Chester || {};
 
 /*Update Board*/
 (function(c) {
-	c.board = {};
-	c.board.update = update;
-	c.board.makeNew = makeNew;
+	Chester.board = {};
+	Chester.board.update = update;
+	Chester.board.makeNew = makeNew;
 	
 
 	function update(boardState) {
-		console.log(boardState)
-makeNew()
-
+		if($("#board").children().length < 1){
+			makeNew(boardState)
+		}else{
 			$(".glyphicon").remove();
 			for (key in boardState) {
 				var ele = $("#" + key).html("<span style='' class='glyphicon glyphicon-" + boardState[key].name + " " + boardState[key].color + "'></span>")
 			}
-		
+		}
 	}
 
 	function makeNew(boardState) {
 		if (!boardState) {
 			boardState = {};
-			c.state.makeNewBoard = true;
+			Chester.state.makeNewBoard = true;
 		}
-		c.ele.board.innerHTML = null;
+		Chester.ele.board.innerHTML = null;
 		var row = 65;
 		var col = 8;
 		for (var i = 0; i < 64; i++) {
@@ -172,19 +170,19 @@ makeNew()
 			}
 			var letter = String.fromCharCode(row);
 			var boardPosition = letter + col;
-			if (c.state.makeNewBoard) {
+			if (Chester.state.makeNewBoard) {
 				if (col < 3 || col > 6) {
 					boardState[boardPosition] = getNewPiece(letter, col);
 				}
 			}
 			var boardPositionClass = "fl square";
 			boardPositionClass = (isEven(i)) ? boardPositionClass + " whiteSquare" : boardPositionClass + " blackSquare";
-			c.ele.board.appendChild(makeTile(boardPosition, boardPositionClass));
+			Chester.ele.board.appendChild(makeTile(boardPosition, boardPositionClass));
 			row++;
 		}
-		c.state.makeNewBoard = false;
-		c.board.update(boardState)
-		c.db.ref.child("boardState").set(boardState)
+		Chester.state.makeNewBoard = false;
+		Chester.board.update(boardState)
+		Chester.db.ref.child("boardState").set(boardState)
 	}
 
 	function getNewPiece(l, c) {
@@ -195,15 +193,15 @@ makeNew()
 			return newPiece;
 		}
 		if (l === "A" || l === "H") {
-			newPiece.name = c.consts.pieces.tower;
+			newPiece.name = Chester.consts.pieces.tower;
 		} else if (l === "B" || l === "G") {
-			newPiece.name = c.consts.pieces.knight;
+			newPiece.name = Chester.consts.pieces.knight;
 		} else if (l === "C" || l === "F") {
-			newPiece.name = c.consts.pieces.bishop;
+			newPiece.name = Chester.consts.pieces.bishop;
 		} else if (l === "D") {
-			newPiece.name = c.consts.pieces.queen;
+			newPiece.name = Chester.consts.pieces.queen;
 		} else if (l === "E") {
-			newPiece.name = c.consts.pieces.king;
+			newPiece.name = Chester.consts.pieces.king;
 		}
 		return newPiece;
 	}

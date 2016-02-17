@@ -12,7 +12,6 @@
 	</head>
 	<body>
 		<div id="announcement"></div>
-		<div id="reset">X</div>
 		<div id="board" class="board"></div>
 		<div id="playerOne" class="playerWrapper">
 			<div class="player-name">Player 1</div> 
@@ -32,7 +31,7 @@
 			'primaryIcon':'external-link',
 		};
 
-		icons = ['google','info','rocket'];
+		icons = ['google','check-square','rocket'];
 		$.ferrisWheelButton(options,icons);
 
 
@@ -41,7 +40,7 @@
 		//$.ferrisWheelButton('addLink','codepen','http://codepen.io/');
 		var allButtons = $.ferrisWheelButton('getButtons')
 		var googleButton = $.ferrisWheelButton('getButton','google')
-		var infoButton = $.ferrisWheelButton('getButton','info')
+		var infoButton = $.ferrisWheelButton('getButton','check-square')
 		var playButton = $.ferrisWheelButton('getButton','rocket')
 
 
@@ -73,29 +72,27 @@
 				case "google":
 					swal("Google Login", "Will log into google", "success");
 				break;
-				case "info":
-					swal("info", "Will provide some info", "info");
+				case "check-square":
 					swal({  
 						title: "Clear board?",   
 						text: "This will reset the board",   
-						type: "warning",   
+						type: "info",   
 						showCancelButton: true,  
 						confirmButtonText: "Cool",
 						cancelButtonText: "No, cancel!",   
 						closeOnConfirm: false,   
-						closeOnCancel: false 
+						closeOnCancel: true 
 					}, function(isConfirm){   
 						if (isConfirm) { 
 							console.log(Chester)
-							Chester.db.ref.child("boardState").set("reset");
-							swal("Deleted!", "game reset!", "success");   
-						} else {     
-							swal("Cancelled", "Your imaginary file is safe :)","error");   
-						} });
+							Chester.board.makeNew();
+							swal("Reset!", "game reset!", "success");   
+						} 
+					});
 				break;
 				case "rocket": 
 					console.log("launching game menu")
-					swal({   title: "Game Menu!",   text: "Hoping to put a list of active games here and a join/make new",   type: "warning",   confirmButtonText: "Cool" });
+					swal({   title: "Game Menu!",   text: "list of active games here and a join/make new",   type: "warning",   confirmButtonText: "Cool" });
 				break;
 				default:
 			}
