@@ -191,10 +191,15 @@
 
 .gameMenuTitle{
   font-size: 30px;
+  text-align: right;
 }
 
 .gameMenuTitle button{
   font-size: 16px;
   margin: 0;
   padding: 0 25px;
+}
+
+.gameMenuTitle span{
+  float: left;
 }

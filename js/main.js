@@ -158,10 +158,12 @@ var Chester = Chester || {};
 	Chester.auth = {};
 	Chester.auth.login = login;
 	Chester.auth.logout = logout;
+	Chester.auth.getAuth = false;
 	Chester.auth.authStatus = authStatus;
 
 	function login() {
 		swal("Google Login", "Will log into google", "success");
+		Chester.auth.getAuth = true;
 		/*Chester.db.ref.authWithOAuthPopup("google", function(error, authData) {
 			if (error) {
 				console.log("Login Failed!", error);
@@ -173,10 +175,11 @@ var Chester = Chester || {};
 	}
 
 	function logout() {
-
+		Chester.auth.getAuth = false;
 	}
 
 	function authStatus() {
+		return Chester.auth.getAuth;
 
 	}
 })();
