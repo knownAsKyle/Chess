@@ -51,26 +51,30 @@ var Chester = Chester || {};
 
 (function(c) {
 	Chester.move = {};
-	Chester.move.handleSquareClick = handleSquareClick
+	Chester.move.handleSquareClick = handleSquareClick;
 
 	function handleSquareClick(e) {
-		if ($(this).children("span").length > 0) {
+		var sqr = $(this);
+		if (sqr.children("span").length > 0) {
 			if (!Chester.state.selectedPiece) {
-				Chester.state.selectedPiece = $(this).children("span").detach();
-				Chester.state.selectedPieceId = $(this).attr("id");
+				Chester.state.selectedPiece = sqr.children("span").detach();
+				Chester.state.selectedPieceId = sqr.attr("id");
 			} else {
-				//captured.push($(this).children("span").detach())
-				$(this).append(Chester.state.selectedPiece)
-				Chester.db.ref.child("boardState").child(Chester.state.selectedPieceId).remove()
-				updateRemoteBoardState(Chester.state.selectedPiece[0], $(this).attr("id"))
+				//captured.push(sqr.children("span").detach())
+				sqr.append(Chester.state.selectedPiece)
+				Chester.helper.animateMove(sqr);
+				Chester.db.ref.child("boardState").child(Chester.state.selectedPieceId).remove();
+				updateRemoteBoardState(Chester.state.selectedPiece[0], sqr.attr("id"));
 				Chester.state.selectedPiece = null;
 				Chester.state.selectedPieceId = null;
 			}
 		} else {
 			if (Chester.state.selectedPiece) {
-				$(this).append(Chester.state.selectedPiece)
+				sqr.append(Chester.state.selectedPiece)
+				Chester.helper.animateMove(sqr);
+				// sqr.addClass()
 				Chester.db.ref.child("boardState").child(Chester.state.selectedPieceId).remove();
-				updateRemoteBoardState(Chester.state.selectedPiece[0], $(this).attr("id"))
+				updateRemoteBoardState(Chester.state.selectedPiece[0], sqr.attr("id"))
 				Chester.state.selectedPiece = null;
 				Chester.state.selectedPieceId = null;
 			}
@@ -120,6 +124,20 @@ var Chester = Chester || {};
 		Chester.board.update(snap.val());
 	});
 
+	$("body").on("click", '.innnerGameList .joinGameButton', function(e) {
+		if ($(e.target).attr("id")) {
+			var cl = $(e.target).attr("id")
+			cl = cl.substring(cl.length - 1)
+			console.log("clicked a game: ", cl)
+			setTimeout(function() {
+				swal("Joined Game!", "Entering Game Number " + cl, "success");
+			}, 300)
+
+
+		}
+
+	})
+
 	$('.board').on("click", ".square", Chester.move.handleSquareClick);
 
 	function clearDB() {
@@ -135,6 +153,47 @@ var Chester = Chester || {};
 	return c;
 })(Chester);
 
+/*authentication*/
+(function() {
+	Chester.auth = {};
+	Chester.auth.login = login;
+	Chester.auth.logout = logout;
+	Chester.auth.authStatus = authStatus;
+
+	function login() {
+		swal("Google Login", "Will log into google", "success");
+		/*Chester.db.ref.authWithOAuthPopup("google", function(error, authData) {
+			if (error) {
+				console.log("Login Failed!", error);
+			} else {
+				console.log("Authenticated successfully with payload:", authData);
+			}
+		});
+		*/
+	}
+
+	function logout() {
+
+	}
+
+	function authStatus() {
+
+	}
+})();
+
+/*Helper*/
+(function() {
+	Chester.helper = {}
+	Chester.helper.animateMove = animateMove;
+
+	function animateMove(e) {
+		e.addClass('active');
+		return setTimeout(function() {
+			e.removeClass('active')
+		}, 200);
+	}
+})();
+
 
 
 /*Update Board*/
@@ -142,12 +201,12 @@ var Chester = Chester || {};
 	Chester.board = {};
 	Chester.board.update = update;
 	Chester.board.makeNew = makeNew;
-	
+
 
 	function update(boardState) {
-		if($("#board").children().length < 1){
+		if ($("#board").children().length < 1) {
 			makeNew(boardState)
-		}else{
+		} else {
 			$(".glyphicon").remove();
 			for (key in boardState) {
 				var ele = $("#" + key).html("<span style='' class='glyphicon glyphicon-" + boardState[key].name + " " + boardState[key].color + "'></span>")

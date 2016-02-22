@@ -39,9 +39,40 @@
   width:12.5%;
   padding-bottom:12.5%; 
   font-size: 2em;
-  
+ 
 }
 
+.active{
+  z-index: 100%;
+}
+
+.square.active:before{
+  content:'';
+  display:block;
+  position:absolute;
+  top:0; right:0; bottom:0; left:0;
+  border-radius:50%;
+  -webkit-animation: ripple .2s linear 1;
+  animation: ripple .4s linear 1;
+  z-index: 2;
+}
+
+/*Ripple put down click color*/
+.square.active:before{
+  border:2px solid white;
+}
+
+@-webkit-keyframes ripple{
+  0% {-webkit-transform:scale(1); }
+  75% {-webkit-transform:scale(1.75); opacity:1;}
+  100% {-webkit-transform:scale(2); opacity:0;}
+}
+
+@keyframes ripple{
+  0% {transform:scale(1); }
+  75% {transform:scale(1.75); opacity:1;}
+  100% {transform:scale(2); opacity:0;}
+}
 .square *{
   position: absolute;
   padding: .6em;
@@ -49,6 +80,9 @@
 
 .whiteSquare{
     background-color:#009688;
+}
+.joinGameButton{
+  background-color:#009688 !important;
 }
 .blackSquare{
     background-color:#424242;
@@ -72,17 +106,6 @@
   text-shadow: 1px 1px black;
 }
 
-#reset{
-  position: fixed;
-  color: red;
-  top:0;
-  right: 0;
-  padding: 5px;
-  font-size: 30px;
-  cursor: pointer;
-  z-index: 2;
-}
-
 .player-name{
   font-size: 30px;
 }
@@ -104,4 +127,74 @@
   .white,.black {
     padding: .1em;
   }
+}
+
+
+
+.innnerGameList{
+  height: 100%;
+}
+
+.innnerGameList ul {
+  list-style-type: none;
+  padding-left:0;
+  overflow: scroll;
+  overflow-x: hidden;
+      box-shadow: inset 0 0 10px #000;
+}
+
+.innnerGameList h3 {
+  font: bold 20px/1.5 Helvetica, Verdana, sans-serif;
+
+}
+.playerOne{
+  float: left;
+}
+
+.playerTwo{
+  float: right;
+}
+
+.innnerGameList li img {
+  float: left;
+  margin-top:15px;
+  margin-right: 4px;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+
+}
+
+.innnerGameList li p {
+  font: 200 12px/1.5 Georgia, Times New Roman, serif;
+}
+
+.innnerGameList li {
+  padding: 10px;
+  overflow: auto;
+  border-top: 1px solid #ccc;
+  transition: all .2s;
+}
+
+.innnerGameList li:hover {
+  box-shadow: inset 0 0 20px #000;
+  cursor: pointer;
+}
+
+.sweet-alert{
+  max-height: 90%;
+}
+
+.innnerGameList button{
+  margin: 0;
+}
+
+.gameMenuTitle{
+  font-size: 30px;
+}
+
+.gameMenuTitle button{
+  font-size: 16px;
+  margin: 0;
+  padding: 0 25px;
 }
