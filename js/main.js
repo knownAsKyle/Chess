@@ -129,13 +129,13 @@ var Chester = Chester || {};
 			cl = cl.substring(cl.length - 1)
 			console.log("clicked a game: ", cl)
 			setTimeout(function() {
-				if(Chester.auth.authStatus()){
-					if($(e.target).text() === "Join"){
+				if (Chester.auth.authStatus()) {
+					if ($(e.target).text() === "Join") {
 						return swal("Joined Game!", "Entering Game Number " + cl, "success");
 					}
-					return swal("Watching Game", "Watching Game Number " + cl, "success");	
+					return swal("Watching Game", "Watching Game Number " + cl, "success");
 				}
-				if($(e.target).text() === "Watch"){
+				if ($(e.target).text() === "Watch") {
 					return swal("Watching Game", "Watching Game Number " + cl, "success");
 				}
 			}, 300)
@@ -145,9 +145,9 @@ var Chester = Chester || {};
 	$("body").on("click", '.newGameButton', function(e) {
 
 		console.log("new game button clicked ... ", e)
-		//TODO
-		//call fb with a set, add timestamp, add user name (from login) as playerOne,
-		//have listener from fb update list of games with new entry, rely on my listener to adjust html 
+			//TODO
+			//call fb with a set, add timestamp, add user name (from login) as playerOne,
+			//have listener from fb update list of games with new entry, rely on my listener to adjust html 
 	})
 
 	$('.board').on("click", ".square", Chester.move.handleSquareClick);
@@ -174,16 +174,27 @@ var Chester = Chester || {};
 	Chester.auth.authStatus = authStatus;
 
 	function login() {
-		swal("Google Login", "Will log into google", "success");
-		Chester.auth.getAuth = true;
-		/*Chester.db.ref.authWithOAuthPopup("google", function(error, authData) {
-			if (error) {
-				console.log("Login Failed!", error);
-			} else {
-				console.log("Authenticated successfully with payload:", authData);
-			}
-		});
-		*/
+		if (window.location.protocol === "file:") {
+			swal("Login Success", "User: TESTING","success");
+			Chester.auth.getAuth = true;
+		} else {
+			Chester.db.ref.authWithOAuthPopup("google", function(error, authData) {
+				if (error) {
+					console.log("Login Failed!", error);
+					swal({
+						title: "There was an issue.",
+						text: error,
+						type: "warning",
+						confirmButtonText: "Ok",
+					});
+					swal()
+				} else {
+					console.log("Authenticated successfully with payload:", authData);
+					swal("Login Success", "User: " + authData.google.displayName, "success");
+					Chester.auth.getAuth = true;
+				}
+			});
+		}
 	}
 
 	function logout() {
@@ -268,14 +279,14 @@ var Chester = Chester || {};
 				});
 				break;
 			case opts[2]:
-				var newOption = Chester.auth.authStatus()?"<button class='newGameButton' title='new game'>New</button>":"";
+				var newOption = Chester.auth.authStatus() ? "<button class='newGameButton' title='new game'>New</button>" : "";
 				swal({
-						showConfirmButton: false,
-						title: "<div class='gameMenuTitle'><span>Games</span> "+newOption+"</div>",
-						text: buildMockGames(6, false),
-						html: true,
-						allowOutsideClick: true
-					})
+					showConfirmButton: false,
+					title: "<div class='gameMenuTitle'><span>Games</span> " + newOption + "</div>",
+					text: buildMockGames(6, false),
+					html: true,
+					allowOutsideClick: true
+				})
 				$("body .innnerGameList ul").height($(".sweet-alert").height() - 100)
 				break;
 			default:
@@ -284,10 +295,10 @@ var Chester = Chester || {};
 
 	function buildMockGames(amt, addImg) {
 
-		console.log("I'm firing",Chester.auth.authStatus())
+		console.log("I'm firing", Chester.auth.authStatus())
 		var html = '<div class="innnerGameList"><ul>'
 		for (var i = 0; i < amt; i++) {
-			var buttonText = Chester.auth.authStatus()?"Join":"Log In to Join";
+			var buttonText = Chester.auth.authStatus() ? "Join" : "Log In to Join";
 			var p2Name = ".............";
 			var mockGameThing = {};
 			mockGameThing.gameId = "gameId_" + i;
