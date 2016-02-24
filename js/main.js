@@ -82,7 +82,6 @@ var Chester = Chester || {};
 	}
 
 	function updateRemoteBoardState(selectedPiece, id) {
-
 		var name = getPieceName(selectedPiece);
 		var color = selectedPiece.classList[2];
 		Chester.db.ref.child("boardState").child(id).set({
@@ -130,12 +129,23 @@ var Chester = Chester || {};
 			cl = cl.substring(cl.length - 1)
 			console.log("clicked a game: ", cl)
 			setTimeout(function() {
-				swal("Joined Game!", "Entering Game Number " + cl, "success");
+				if(Chester.auth.authStatus()){
+					if($(e.target).text() === "Join"){
+						return swal("Joined Game!", "Entering Game Number " + cl, "success");
+					}
+					return swal("Watching Game", "Watching Game Number " + cl, "success");	
+				}
+				if($(e.target).text() === "Watch"){
+					return swal("Watching Game", "Watching Game Number " + cl, "success");
+				}
 			}, 300)
-
-
 		}
+	})
 
+	$("body").on("click", '.newGameButton', function(e) {
+		console.log("new game button clicked ... ",e)
+	
+		
 	})
 
 	$('.board').on("click", ".square", Chester.move.handleSquareClick);
@@ -180,7 +190,6 @@ var Chester = Chester || {};
 
 	function authStatus() {
 		return Chester.auth.getAuth;
-
 	}
 })();
 
@@ -197,7 +206,116 @@ var Chester = Chester || {};
 	}
 })();
 
+/*menu handler*/
+(function($) {
+	var options = {
+		'primaryIcon': 'external-link',
+	};
+	var icons = ['google', 'check-square', 'rocket'];
+	$.ferrisWheelButton(options, icons);
 
+	var allButtons = $.ferrisWheelButton('getButtons')
+	var menuButtonOne = $.ferrisWheelButton('getButton', 'google')
+	var menuButtonTwo = $.ferrisWheelButton('getButton', 'check-square')
+	var menuButtonThree = $.ferrisWheelButton('getButton', 'rocket')
+
+	//Use jquery on all buttons
+	allButtons.css({
+		'border': '2px solid white'
+	});
+	menuButtonOne.css({
+		'background-color': '#F44336'
+	});
+	menuButtonTwo.css({
+		'background-color': '#3b5998',
+	});
+
+	allButtons.on('click', handleMenuButtonClick);
+
+	function handleMenuButtonClick(ev) {
+		//this will stop closing
+		ev.stopImmediatePropagation();
+		var optionSelected = $(ev.target);
+		var optionSelectedName = optionSelected.attr("title") ? $(ev.target).attr("title") : optionSelected.children(".fa").attr("title");
+		routeMenuButtonClick(optionSelectedName, icons)
+	}
+
+	function routeMenuButtonClick(option, opts) {
+		switch (option) {
+			case opts[0]:
+				Chester.auth.login()
+				if (Chester.auth.getAuth) {
+					console.log("google login set to true ", Chester.auth.getAuth);
+				}
+				break;
+			case opts[1]:
+				swal({
+					title: "Clear board?",
+					text: "This will reset the board",
+					type: "info",
+					showCancelButton: true,
+					confirmButtonText: "Ok!",
+					cancelButtonText: "No, cancel!",
+					closeOnConfirm: false,
+					closeOnCancel: true
+				}, function(isConfirm) {
+					if (isConfirm) {
+						Chester.board.makeNew();
+						swal("Reset!", "game reset!", "success");
+					}
+				});
+				break;
+			case opts[2]:
+				var newOption = Chester.auth.authStatus()?"<button class='newGameButton' title='new game'>New</button>":"";
+				swal({
+						showConfirmButton: false,
+						title: "<div class='gameMenuTitle'><span>Games</span> "+newOption+"</div>",
+						text: buildMockGames(6, false),
+						html: true,
+						allowOutsideClick: true
+					})
+				$("body .innnerGameList ul").height($(".sweet-alert").height() - 100)
+				break;
+			default:
+		}
+	}
+
+	function buildMockGames(amt, addImg) {
+
+		console.log("I'm firing",Chester.auth.authStatus())
+		var html = '<div class="innnerGameList"><ul>'
+		for (var i = 0; i < amt; i++) {
+			var buttonText = Chester.auth.authStatus()?"Join":"Log In to Join";
+			var p2Name = ".............";
+			var mockGameThing = {};
+			mockGameThing.gameId = "gameId_" + i;
+			mockGameThing.playerOne = {
+				"name": "Player1"
+			};
+			if (i < (amt - 2)) {
+				mockGameThing.playerTwo = {
+					"name": "Player2"
+				};
+			}
+
+
+
+			html = html + '<li class="' + mockGameThing.gameId + '">';
+			if (addImg) {
+				html = html + '<img src="http://lorempixum.com/100/100/nature/' + (i + 1) + '">';
+			}
+			if (mockGameThing.playerTwo) {
+				buttonText = "Watch";
+				p2Name = mockGameThing.playerTwo.name;
+			}
+			html = html + '<h3><div class="playerOne">' + mockGameThing.playerOne.name + '</div> vs <div class="playerTwo">' + p2Name + '</div></h3>';
+			html = html + '<button id="' + mockGameThing.gameId + '" class="joinGameButton">' + buttonText + '</button>';
+			html = html + '</li>'
+		}
+		html = html + '</ul></div>'
+		return html;
+	}
+})(jQuery);
 
 /*Update Board*/
 (function(c) {
