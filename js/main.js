@@ -143,9 +143,11 @@ var Chester = Chester || {};
 	})
 
 	$("body").on("click", '.newGameButton', function(e) {
-		console.log("new game button clicked ... ",e)
-	
-		
+
+		console.log("new game button clicked ... ", e)
+		//TODO
+		//call fb with a set, add timestamp, add user name (from login) as playerOne,
+		//have listener from fb update list of games with new entry, rely on my listener to adjust html 
 	})
 
 	$('.board').on("click", ".square", Chester.move.handleSquareClick);
