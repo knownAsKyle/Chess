@@ -1,13 +1,17 @@
 var Chester = Chester || {};
+
 /*
 	LOCAL STATE TRACKER
 */
 (function(c) {
+	// var asdf = new Firebase("https://quicktest1.firebaseio.com/chess/games/-KBLLg8_B3yuBY7tgH8a")
+	// asdf.update({"playerTwo":{"name":"robot"}})
 	Chester.state = {};
 	Chester.state.firstLoad = true;
 	Chester.state.makeNewBoard = false;
 	Chester.state.selectedPiece = null;
 	Chester.state.selectedPieceId = null;
+	Chester.state.currentGameList = [];
 	return c;
 })(Chester);
 /*
@@ -121,8 +125,29 @@ var Chester = Chester || {};
 	Chester.db.ref.child("boardState").on("value", function(snap) {
 		Chester.board.update(snap.val());
 	});
+	Chester.db.ref.child("games").on("value", function(snap) {
+		Chester.state.currentGameList = [];
+		if (snap.val()) {
+			snap.forEach(function(child) {
+				Chester.state.currentGameList.push({
+					gameId: child.key(),
+					playerOne: child.val().playerOne
+				})
+			})
+			Chester.state.currentGameList
 
-	$("body").on("click", '.innnerGameList .joinGameButton', function(e) {
+			console.dir(Chester.state.currentGameList)
+		}
+		console.log("here? ", $(".innerGameList").length)
+		if ($(".innerGameList").length) {
+			var p = $("body .innerGameList").parent()
+			p.empty();
+			p.append(Chester.helper.buildGameList(Chester.state.currentGameList));
+		}
+
+	});
+
+	$("body").on("click", '.innerGameList .joinGameButton', function(e) {
 		if ($(e.target).attr("id")) {
 			var cl = $(e.target).attr("id")
 			cl = cl.substring(cl.length - 1)
@@ -147,12 +172,14 @@ var Chester = Chester || {};
 		var date = new Date(time);
 		var newGame = {};
 		newGame.timeStamp = date.toString();
-		newGame.playerOne = {"name":Chester.auth.getAuthData().google.displayName};
+		newGame.playerOne = {
+			"name": Chester.auth.getAuthData().google.displayName
+		};
 		var id = Chester.db.ref.child("games").push(newGame);
 
-			//TODO
-			//call fb with a push, add timestamp, add user name (from login) as playerOne,
-			//have listener from fb update list of games with new entry, rely on my listener to adjust html 
+		//TODO
+		//call fb with a push, add timestamp, add user name (from login) as playerOne,
+		//have listener from fb update list of games with new entry, rely on my listener to adjust html 
 	})
 
 	$('.board').on("click", ".square", Chester.move.handleSquareClick);
@@ -181,7 +208,7 @@ var Chester = Chester || {};
 
 	function login() {
 		if (window.location.protocol === "file:") {
-			swal("Login Success", "User: TESTING","success");
+			swal("Login Success", "User: TESTING", "success");
 			Chester.auth.getAuth = true;
 		} else {
 			Chester.db.ref.authWithOAuthPopup("google", function(error, authData) {
@@ -212,7 +239,7 @@ var Chester = Chester || {};
 		return Chester.auth.getAuth;
 	}
 
-	function getAuthData(){
+	function getAuthData() {
 		return Chester.auth.authData;
 	}
 })();
@@ -221,12 +248,71 @@ var Chester = Chester || {};
 (function() {
 	Chester.helper = {}
 	Chester.helper.animateMove = animateMove;
+	Chester.helper.buildGameList = buildGameList;
 
 	function animateMove(e) {
 		e.addClass('active');
 		return setTimeout(function() {
 			e.removeClass('active')
 		}, 200);
+	}
+
+	function buildGameList(gameList, addImg) {
+		gameList = gameList || Chester.state.currentGameList;
+		var amt = gameList.length
+		console.log("I'm firing", Chester.auth.authStatus())
+		var html = '<div class="innerGameList"><ul>';
+
+		for (var i = 0; i < amt; i++) {
+			var buttonText = Chester.auth.authStatus() ? "Join" : "Log In to Join";
+			var p2Name = ".............";
+			html = html + '<li class="' + gameList[i].gameId + '">';
+			if (addImg) {
+				html = html + '<img src="http://lorempixum.com/100/100/nature/' + (i + 1) + '">';
+			}
+			if (gameList[i].playerTwo) {
+				buttonText = "Watch";
+				p2Name = gameList[i].playerTwo.name;
+			}
+			html = html + '<h3><div class="playerOne">' + gameList[i].playerOne.name + '</div> vs <div class="playerTwo">' + p2Name + '</div></h3>';
+			html = html + '<button id="' + gameList[i].gameId + '" class="joinGameButton">' + buttonText + '</button>';
+			html = html + '</li>'
+		}
+		html = html + '</ul></div>'
+		return html;
+	}
+
+	function buildMockGames(amt, addImg) {
+		console.log("I'm firing", Chester.auth.authStatus())
+		var html = '<div class="innerGameList"><ul>'
+		for (var i = 0; i < amt; i++) {
+			var buttonText = Chester.auth.authStatus() ? "Join" : "Log In to Join";
+			var p2Name = ".............";
+			var mockGameThing = {};
+			mockGameThing.gameId = "gameId_" + i;
+			mockGameThing.playerOne = {
+				"name": "Player1"
+			};
+			if (i < (amt - 2)) {
+				mockGameThing.playerTwo = {
+					"name": "Player2"
+				};
+			}
+
+			html = html + '<li class="' + mockGameThing.gameId + '">';
+			if (addImg) {
+				html = html + '<img src="http://lorempixum.com/100/100/nature/' + (i + 1) + '">';
+			}
+			if (mockGameThing.playerTwo) {
+				buttonText = "Watch";
+				p2Name = mockGameThing.playerTwo.name;
+			}
+			html = html + '<h3><div class="playerOne">' + mockGameThing.playerOne.name + '</div> vs <div class="playerTwo">' + p2Name + '</div></h3>';
+			html = html + '<button id="' + mockGameThing.gameId + '" class="joinGameButton">' + buttonText + '</button>';
+			html = html + '</li>'
+		}
+		html = html + '</ul></div>'
+		return html;
 	}
 })();
 
@@ -293,51 +379,18 @@ var Chester = Chester || {};
 				swal({
 					showConfirmButton: false,
 					title: "<div class='gameMenuTitle'><span>Games</span> " + newOption + "</div>",
-					text: buildMockGames(6, false),
+					text: Chester.helper.buildGameList(Chester.state.currentGameList),
 					html: true,
 					allowOutsideClick: true
 				})
-				$("body .innnerGameList ul").height($(".sweet-alert").height() - 100)
+				$("body .innerGameList ul").height($(".sweet-alert").height() - 100)
 				break;
 			default:
 		}
 	}
 
-	function buildMockGames(amt, addImg) {
-
-		console.log("I'm firing", Chester.auth.authStatus())
-		var html = '<div class="innnerGameList"><ul>'
-		for (var i = 0; i < amt; i++) {
-			var buttonText = Chester.auth.authStatus() ? "Join" : "Log In to Join";
-			var p2Name = ".............";
-			var mockGameThing = {};
-			mockGameThing.gameId = "gameId_" + i;
-			mockGameThing.playerOne = {
-				"name": "Player1"
-			};
-			if (i < (amt - 2)) {
-				mockGameThing.playerTwo = {
-					"name": "Player2"
-				};
-			}
 
 
-
-			html = html + '<li class="' + mockGameThing.gameId + '">';
-			if (addImg) {
-				html = html + '<img src="http://lorempixum.com/100/100/nature/' + (i + 1) + '">';
-			}
-			if (mockGameThing.playerTwo) {
-				buttonText = "Watch";
-				p2Name = mockGameThing.playerTwo.name;
-			}
-			html = html + '<h3><div class="playerOne">' + mockGameThing.playerOne.name + '</div> vs <div class="playerTwo">' + p2Name + '</div></h3>';
-			html = html + '<button id="' + mockGameThing.gameId + '" class="joinGameButton">' + buttonText + '</button>';
-			html = html + '</li>'
-		}
-		html = html + '</ul></div>'
-		return html;
-	}
 })(jQuery);
 
 /*Update Board*/
@@ -349,7 +402,7 @@ var Chester = Chester || {};
 
 	function update(boardState) {
 		if ($("#board").children().length < 1) {
-			makeNew(boardState)
+			Chester.board.makeNew(boardState)
 		} else {
 			$(".glyphicon").remove();
 			for (key in boardState) {
